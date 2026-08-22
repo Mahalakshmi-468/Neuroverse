@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroVerse — Mission Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">◈</span> NEUROVERSE</div>
+  <div class="brand-sub">A PLAYABLE STORY GAME</div>
+  <div id="llmBadge" class="llm-badge">CHECKING ENGINE…</div>
+</header>
+
+<main class="shell">
+
+  <!-- ===================== LAUNCH SCREEN ===================== -->
+  <section id="launch" class="screen">
+    <div class="launch-grid">
+      <div class="panel briefing">
+        <p class="eyebrow">NEW TRANSMISSION</p>
+        <h1>Speak your world<br><span>into existence.</span></h1>
+        <p class="lead">Describe an adventure. NeuroVerse builds the world, casts a companion, and narrates the mission live — reacting to every choice you make.</p>
+
+        <label for="player">Call sign</label>
+        <input id="player" value="Explorer" maxlength="60">
+
+        <label for="idea">Mission idea</label>
+        <textarea id="idea" placeholder="e.g. I want to explore a sunken ocean kingdom and find a lost pearl…" maxlength="500"></textarea>
+
+        <div class="actions">
+          <button id="voice" type="button" class="btn ghost">🎤 Speak idea</button>
+          <button id="start" type="button" class="btn primary">Launch mission ▸</button>
+        </div>
+        <p id="voiceStatus" class="muted" role="status"></p>
+        <p id="startError" class="error" role="alert"></p>
+      </div>
+
+      <div class="panel missions">
+        <p class="eyebrow">MISSION LOG</p>
+        <h2>Continue an adventure</h2>
+        <div id="sessionList" class="session-list">
+          <p class="muted">Loading saved missions…</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <section id="game" class="screen hidden">
+    <div class="console-grid">
+
+      <aside class="panel status">
+        <p class="eyebrow">STATUS</p>
+        <div class="stat"><span>World</span><strong id="statWorld"><span id="worldIcon" class="world-icon">—</span></strong></div>
+        <div class="stat"><span>Companion</span><strong id="statCompanion">—</strong></div>
+        <div class="stat"><span>Chapter</span><strong id="statChapter">—</strong></div>
+        <div class="bar-row">
+          <span>Energy</span>
+          <div class="bar"><div id="healthBar" class="bar-fill health"></div></div>
+        </div>
+        <div class="bar-row">
+          <span>Score</span>
+          <strong id="statScore">0</strong>
+        </div>
+
+        <p class="eyebrow dna-heading">IMAGINATION DNA</p>
+        <div class="trait-row">
+          <span class="trait-label brave">Bravery</span>
+          <div class="bar trait"><div id="traitBravery" class="bar-fill brave"></div></div>
+        </div>
+        <div class="trait-row">
+          <span class="trait-label curious">Curiosity</span>
+          <div class="bar trait"><div id="traitCuriosity" class="bar-fill curious"></div></div>
+        </div>
+        <div class="trait-row">
+          <span class="trait-label kind">Kindness</span>
+          <div class="bar trait"><div id="traitKindness" class="bar-fill kind"></div></div>
+        </div>
+
+        <p class="eyebrow dna-heading">INVENTORY</p>
+        <div id="inventoryBox" class="inventory-box">
+          <p class="muted small">Nothing collected yet.</p>
+        </div>
+
+        <button id="newMission" type="button" class="btn ghost small">⟲ New game</button>
+      </aside>
+
+      <div class="panel viewport">
+        <div class="viewport-head">
+          <span id="chapterTag" class="chapter-tag">CH. 1</span>
+          <button id="speakStory" type="button" class="btn ghost small">🔊 Narrate</button>
+        </div>
+        <p id="story" class="story-text"></p>
+        <div class="mission-box">
+          <span class="mission-label">MISSION</span>
+          <p id="mission"></p>
+        </div>
+        <div class="choice-timer-row">
+          <div class="choice-timer-track"><div id="choiceTimerBar" class="choice-timer-fill"></div></div>
+          <span id="choiceTimerLabel" class="choice-timer-label"></span>
+        </div>
+        <div id="choices" class="choices"></div>
+
+        <div id="miniGameOverlay" class="mini-game-overlay hidden">
+          <p class="mini-game-title">⚔️ A guardian challenges you!</p>
+          <p class="mini-game-sub">Tap the glowing sigil <strong id="miniGameScore">0 / 5</strong> times before time runs out — <span id="miniGameTime">6s</span></p>
+          <div id="miniGameArena" class="mini-game-arena">
+            <button id="miniGameTarget" class="mini-game-target" aria-label="Tap the sigil">✦</button>
+          </div>
+          <p id="miniGameResult" class="mini-game-result hidden"></p>
+        </div>
+
+        <p id="finishedNote" class="finished-note hidden">Mission complete. Start a new one from the console.</p>
+        <p id="choiceError" class="error" role="alert"></p>
+      </div>
+
+      <aside class="panel log">
+        <p class="eyebrow">CHAPTER LOG</p>
+        <ol id="historyLog" class="history-log"></ol>
+        <p class="eyebrow dna-heading">ACHIEVEMENTS</p>
+        <div id="achievementList" class="achievement-list">
+          <p class="muted small">None unlocked yet.</p>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <div id="achievementToast" class="achievement-toast">
+    <span class="ach-badge">★</span>
+    <div>
+      <p class="ach-title">Achievement unlocked</p>
+      <p id="achievementToastName" class="ach-name">—</p>
+    </div>
+  </div>
+
+  <div id="confettiLayer" class="confetti-layer"></div>
+
+</main>
+
+<footer>NeuroVerse • Play, choose, and level up v0.4 <span id="engineTag"></span></footer>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
